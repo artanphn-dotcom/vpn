@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FortiGate / FortiManager IPsec Wizard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+<h2>IPsec VPN Wizard</h2>
+
+<form method="post" action="/generate">
+
+<div class="step active">
+  <h3>General</h3>
+  <input name="tunnel_name" placeholder="Tunnel Name" required>
+  <input name="interface" value="wan1" required>
+  <label>
+    <input type="checkbox" name="fortimanager_mode" value="1"> Use FortiManager mode
+  </label>
+  <button type="button" onclick="next()">Next</button>
+</div>
+
+<div class="step">
+  <h3>Phase 1</h3>
+  <input name="remote_gw" placeholder="Remote Gateway IP" required>
+  <input name="psk" placeholder="Pre-Shared Key" required>
+  <select name="phase1_proposal">
+    <option value="aes256-sha256" selected>aes256-sha256</option>
+    <option value="aes256-sha384">aes256-sha384</option>
+    <option value="aes128-sha256">aes128-sha256</option>
+  </select>
+  <select name="dhgrp">
+    <option value="14" selected>DH 14</option>
+    <option value="19">DH 19</option>
+    <option value="20">DH 20</option>
+  </select>
+  <button type="button" onclick="prev()" class="secondary">Back</button>
+  <button type="button" onclick="next()">Next</button>
+</div>
+
+<div class="step">
+  <h3>Phase 2 & Routing</h3>
+  <select name="phase2_proposal">
+    <option value="aes256-sha256" selected>aes256-sha256</option>
+    <option value="aes256gcm">aes256-gcm</option>
+  </select>
+  <input name="local_subnet" placeholder="Local Subnet (CIDR)" value="10.10.10.0/24" required>
+  <input name="remote_subnet" placeholder="Remote Subnet (CIDR)" value="192.168.1.0/24" required>
+  <button type="button" onclick="prev()" class="secondary">Back</button>
+  <button type="button" onclick="next()">Next</button>
+</div>
+
+<div class="step">
+  <h3>Reverse Rule (Partner → Us)</h3>
+  <input name="local_endpoint" placeholder="Local Endpoint (IP or FQDN)" required>
+  <input name="local_port" placeholder="Port / Service" value="ALL">
+  <button type="button" onclick="prev()" class="secondary">Back</button>
+  <button type="submit">Generate</button>
+</div>
+
+</form>
+</div>
+<script src="/static/wizard.js"></script>
+</body>
+</html>

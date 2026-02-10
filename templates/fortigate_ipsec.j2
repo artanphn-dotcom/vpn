@@ -1,0 +1,50 @@
+config vpn ipsec phase1-interface
+    edit "{{ tunnel_name }}"
+        set interface "{{ interface }}"
+        set ike-version 2
+        set peertype any
+        set proposal {{ phase1_proposal }}
+        set dhgrp {{ dhgrp }}
+        set remote-gw {{ remote_gw }}
+        set psksecret {{ psk }}
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "{{ tunnel_name }}_p2"
+        set phase1name "{{ tunnel_name }}"
+        set proposal {{ phase2_proposal }}
+        set src-subnet {{ local_subnet }}
+        set dst-subnet {{ remote_subnet }}
+    next
+end
+
+# Forward rule
+config firewall policy
+    edit 0
+        set name "VPN_{{ tunnel_name }}"
+        set srcintf "internal"
+        set dstintf "{{ interface }}"
+        set srcaddr "{{ local_subnet }}"
+        set dstaddr "{{ remote_subnet }}"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+end
+
+# Reverse rule
+config firewall policy
+    edit 1
+        set name "VPN_{{ tunnel_name }}_reverse"
+        set srcintf "{{ interface }}"
+        set dstintf "internal"
+        set srcaddr "{{ remote_subnet }}"
+        set dstaddr "{{ local_endpoint }}"
+        set action accept
+        set schedule "always"
+        set service "{{ local_port }}"
+        set logtraffic all
+    next
+end

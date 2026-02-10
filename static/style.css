@@ -1,0 +1,43 @@
+body {
+  background: #0f172a;
+  color: #e5e7eb;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 30px;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+button {
+  background: #2563eb;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #334155;
+}
+
+pre {
+  background: #020617;
+  padding: 20px;
+  overflow-x: auto;
+}

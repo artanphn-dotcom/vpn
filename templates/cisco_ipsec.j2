@@ -1,0 +1,36 @@
+! Cisco IOS / ASA style
+{% if tunnel_local_ip and tunnel_remote_ip %}
+! IKE / Phase1
+crypto ikev2 proposal IKEV2-PROP
+ encryption aes-cbc-256
+ integrity sha256
+!
+crypto ikev2 policy IKEV2-POL
+ proposal IKEV2-PROP
+!
+# IPsec / Phase2
+crypto ipsec transform-set TS esp-aes 256 esp-sha256-hmac
+
+# Tunnel and routing
+interface Tunnel0
+ description {{ tunnel_name }}
+ ip address {{ tunnel_local_ip }}
+ tunnel source {{ local_endpoint }}
+ tunnel destination {{ tunnel_remote_ip }}
+ tunnel protection ipsec profile IPSEC-PROFILE
+!
+# ACLs and NAT exemption
+access-list VPN-ACL extended permit ip {{ local_subnet }} {{ remote_subnet }}
+# Reverse rule
+access-list VPN-ACL remark Reverse rule
+{% else %}
+! NOTE: Cisco-style tunnel configurations typically require a local tunnel IP and a remote tunnel IP.
+! Provide 'Tunnel Local IP (CIDR)' and 'Tunnel Remote IP' in the wizard for a complete Cisco configuration.
+! IKE / Phase1
+crypto ikev2 proposal IKEV2-PROP
+ encryption aes-cbc-256
+ integrity sha256
+!
+# IPsec / Phase2
+crypto ipsec transform-set TS esp-aes 256 esp-sha256-hmac
+{% endif %}

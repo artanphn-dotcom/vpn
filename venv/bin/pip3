@@ -1,4 +1,4 @@
-#!/mnt/c/Users/avitija1/Desktop/fortigate_ipsec_generator/venv/bin/python3
+#!/mnt/c/Users/avitija1/Desktop/fortigate_ipsec_generator/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

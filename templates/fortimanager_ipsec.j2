@@ -7,6 +7,7 @@ config vpn ipsec phase1-interface
     next
 end
 
+# Phase 2 - separate from routing
 config vpn ipsec phase2-interface
     edit "{{ tunnel_name }}_p2"
         set phase1name "{{ tunnel_name }}"
@@ -16,6 +17,7 @@ config vpn ipsec phase2-interface
     next
 end
 
+# Routing
 config router static
     edit 0
         set dst {{ remote_subnet }}
@@ -24,7 +26,7 @@ config router static
     next
 end
 
-# Forward rule
+# Forward rule (Local -> Remote)
 config firewall policy
     edit 0
         set name "VPN_{{ tunnel_name }}"
@@ -39,7 +41,7 @@ config firewall policy
     next
 end
 
-# Reverse rule
+# Reverse rule (Remote -> Local)
 config firewall policy
     edit 1
         set name "VPN_{{ tunnel_name }}_reverse"

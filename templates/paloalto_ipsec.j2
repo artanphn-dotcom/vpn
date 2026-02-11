@@ -1,0 +1,29 @@
+# Palo Alto PAN-OS (example)
+{% if tunnel_local_ip and tunnel_remote_ip %}
+# IKE / Phase1
+set network ike gateway {{ tunnel_name }} gateway {{ remote_gw }}
+set network ike crypto-profiles ike-crypto {{ phase1_proposal }}
+
+# IPsec / Phase2
+set network ipsec tunnel {{ tunnel_name }} ipsec-crypto {{ phase2_proposal }}
+
+# Tunnel interface and routing
+set network interface tunnel units 1 ip {{ tunnel_local_ip }}
+set network virtual-router default routing-table ip static-route {{ tunnel_name }} destination {{ remote_subnet }} nexthop ip-address {{ remote_gw }}
+
+# Security policy
+set rulebase security rules "VPN_{{ tunnel_name }}" source {{ local_subnet }} destination {{ remote_subnet }} application any action allow
+# Reverse
+set rulebase security rules "VPN_{{ tunnel_name }}_reverse" source {{ remote_subnet }} destination {{ local_endpoint }} application any action allow
+{% else %}
+# NOTE: Palo Alto templates commonly require a tunnel interface IP (local) and a peer IP (remote).
+# Please provide 'Tunnel Local IP (CIDR)' and 'Tunnel Remote IP' in the wizard to generate a full Palo Alto config.
+# IKE / Phase1
+set network ike gateway {{ tunnel_name }} gateway {{ remote_gw }}
+
+# IPsec / Phase2 (partial)
+set network ipsec tunnel {{ tunnel_name }} ipsec-crypto {{ phase2_proposal }}
+
+# Security policy (partial)
+set rulebase security rules "VPN_{{ tunnel_name }}" source {{ local_subnet }} destination {{ remote_subnet }} application any action allow
+{% endif %}

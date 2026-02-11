@@ -1,0 +1,30 @@
+{
+  "fortigate": {
+    "FortiOS-6.4": {
+      "phase1_proposal": "aes256-sha256",
+      "phase2_proposal": "aes256-sha256",
+      "dhgrp": "14",
+      "interface": "wan1"
+    },
+    "FortiOS-7.0": {
+      "phase1_proposal": "aes256-sha384",
+      "phase2_proposal": "aes256gcm",
+      "dhgrp": "19",
+      "interface": "wan1"
+    }
+  },
+  "paloalto": {
+    "PAN-OS-10.1": {
+      "phase1_proposal": "aes256-sha256",
+      "phase2_proposal": "aes256-sha256",
+      "interface": "ethernet1/1"
+    }
+  },
+  "cisco": {
+    "IOS-XE-17": {
+      "phase1_proposal": "aes256-sha256",
+      "phase2_proposal": "aes256-sha256",
+      "interface": "GigabitEthernet0/0"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+config vpn ipsec phase1-interface
+    edit "payback-to-rewe"
+        set comments "Managed via FortiManager"
+        set remote-gw 84.22.48.123
+        set proposal aes256-sha384
+        set dhgrp 20
+    next
+end
+
+# Phase 2 - separate from routing
+config vpn ipsec phase2-interface
+    edit "payback-to-rewe_p2"
+        set phase1name "payback-to-rewe"
+        set proposal aes256gcm
+        set src-subnet 10.10.10.0/24
+        set dst-subnet 192.168.1.0/24
+    next
+end
+
+# Routing
+config router static
+    edit 0
+        set dst 192.168.1.0/24
+        set device "wan1"
+        set gateway 84.22.48.123
+    next
+end
+
+# Forward rule (Local -> Remote)
+config firewall policy
+    edit 0
+        set name "VPN_payback-to-rewe"
+        set srcintf "internal"
+        set dstintf "wan1"
+        set srcaddr "10.10.10.0/24"
+        set dstaddr "192.168.1.0/24"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+end
+
+# Reverse rule (Remote -> Local)
+config firewall policy
+    edit 1
+        set name "VPN_payback-to-rewe_reverse"
+        set srcintf "wan1"
+        set dstintf "internal"
+        set srcaddr "192.168.1.0/24"
+        set dstaddr "10.200.100.7"
+        set action accept
+        set schedule "always"
+        set service "443"
+        set logtraffic all
+    next
+end

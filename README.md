@@ -150,5 +150,5 @@ Additional recommendations
 - Add frontend validation for IP/subnet formats (use a library or regex) and helpful inline hints for vendor-specific fields.
 - Consider encrypting PSKs if you plan to persist them or adding an option to store configs locally encrypted.
 - Provide example presets for common FortiOS/PAN-OS/Cisco versions to reduce user input and errors.# vpn 
-- Artan V.
+# Artan V.
 # vpn

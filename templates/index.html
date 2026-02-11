@@ -1,65 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>FortiGate / FortiManager IPsec Wizard</title>
+  <title>IPsec VPN Configuration Generator</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div class="container">
-<h2>IPsec VPN Wizard</h2>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <h1>VPN Config Generator</h1>
+      <p class="tag">Multi-vendor IPsec templates — FortiGate, FortiManager, Palo Alto (PAN-OS 10.1), Cisco IOS XE</p>
+    </div>
+  </header>
 
-<form method="post" action="/generate">
+  <main class="container">
+    <form id="wizard-form" method="post" class="wizard-form">
 
-<div class="step active">
-  <h3>General</h3>
-  <input name="tunnel_name" placeholder="Tunnel Name" required>
-  <input name="interface" value="wan1" required>
-  <label>
-    <input type="checkbox" name="fortimanager_mode" value="1"> Use FortiManager mode
-  </label>
-  <button type="button" onclick="next()">Next</button>
-</div>
+      <section class="step vendor-step active">
+        <h2>Select Vendor</h2>
+        <div class="vendors">
+          <label class="vendor-card">
+            <input type="radio" name="vendor" value="fortigate" checked form="wizard-form">
+            <div class="vendor-body">
+              <strong>FortiGate</strong>
+              <div class="muted">FortiOS CLI</div>
+            </div>
+          </label>
 
-<div class="step">
-  <h3>Phase 1</h3>
-  <input name="remote_gw" placeholder="Remote Gateway IP" required>
-  <input name="psk" placeholder="Pre-Shared Key" required>
-  <select name="phase1_proposal">
-    <option value="aes256-sha256" selected>aes256-sha256</option>
-    <option value="aes256-sha384">aes256-sha384</option>
-    <option value="aes128-sha256">aes128-sha256</option>
-  </select>
-  <select name="dhgrp">
-    <option value="14" selected>DH 14</option>
-    <option value="19">DH 19</option>
-    <option value="20">DH 20</option>
-  </select>
-  <button type="button" onclick="prev()" class="secondary">Back</button>
-  <button type="button" onclick="next()">Next</button>
-</div>
+          <label class="vendor-card">
+            <input type="radio" name="vendor" value="fortimanager" form="wizard-form">
+            <div class="vendor-body">
+              <strong>FortiManager</strong>
+              <div class="muted">Managed device template</div>
+            </div>
+          </label>
 
-<div class="step">
-  <h3>Phase 2 & Routing</h3>
-  <select name="phase2_proposal">
-    <option value="aes256-sha256" selected>aes256-sha256</option>
-    <option value="aes256gcm">aes256-gcm</option>
-  </select>
-  <input name="local_subnet" placeholder="Local Subnet (CIDR)" value="10.10.10.0/24" required>
-  <input name="remote_subnet" placeholder="Remote Subnet (CIDR)" value="192.168.1.0/24" required>
-  <button type="button" onclick="prev()" class="secondary">Back</button>
-  <button type="button" onclick="next()">Next</button>
-</div>
+          <label class="vendor-card">
+            <input type="radio" name="vendor" value="paloalto" form="wizard-form">
+            <div class="vendor-body">
+              <strong>Palo Alto (PAN-OS 10.1)</strong>
+              <div class="muted">Requires tunnel interface IPs</div>
+            </div>
+          </label>
 
-<div class="step">
-  <h3>Reverse Rule (Partner → Us)</h3>
-  <input name="local_endpoint" placeholder="Local Endpoint (IP or FQDN)" required>
-  <input name="local_port" placeholder="Port / Service" value="ALL">
-  <button type="button" onclick="prev()" class="secondary">Back</button>
-  <button type="submit">Generate</button>
-</div>
+          <label class="vendor-card">
+            <input type="radio" name="vendor" value="cisco" form="wizard-form">
+            <div class="vendor-body">
+              <strong>Cisco (IOS XE)</strong>
+              <div class="muted">Requires tunnel interface IPs</div>
+            </div>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="primary" onclick="nextStep()">Next</button>
+        </div>
+      </section>
 
-</form>
+      <section class="step general-step">
+        <h2>General</h2>
+        <div class="form-grid">
+          <div class="card">
+            <h3>General</h3>
+            <input name="tunnel_name" placeholder="Tunnel Name" required>
+            <input name="interface" value="wan1" required>
+          </div>
+
+          <div class="card">
+            <h3>Phase 1</h3>
+            <div class="row">
+              <label>Presets:</label>
+              <select id="preset-select" onchange="applyPreset()">
+                <option value="">-- Select preset --</option>
+              </select>
+            </div>
+            <input name="remote_gw" placeholder="Remote Gateway IP" required>
+            <input name="psk" placeholder="Pre-Shared Key" required>
+            <div class="tip">Tip: PSK should be at least 12 characters for better security.</div>
+            <select name="phase1_proposal">
+              <option value="aes256-sha256" selected>aes256-sha256</option>
+              <option value="aes256-sha384">aes256-sha384</option>
+              <option value="aes128-sha256">aes128-sha256</option>
+            </select>
+            <select name="dhgrp">
+              <option value="14" selected>DH 14</option>
+              <option value="19">DH 19</option>
+              <option value="20">DH 20</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="secondary" onclick="prevStep()">Back</button>
+          <button type="button" class="primary" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step phase2-step">
+        <h2>Phase 2</h2>
+        <div class="card">
+          <select name="phase2_proposal">
+            <option value="aes256-sha256" selected>aes256-sha256</option>
+            <option value="aes256gcm">aes256-gcm</option>
+          </select>
+          <input name="local_subnet" placeholder="Local Subnet (CIDR)" value="10.10.10.0/24" required>
+          <input name="remote_subnet" placeholder="Remote Subnet (CIDR)" value="192.168.1.0/24" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="secondary" onclick="prevStep()">Back</button>
+          <button type="button" class="primary" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step vendor-specific-step">
+        <h2>Vendor-specific</h2>
+        <div class="card">
+          <h3>Reverse Rule (Partner → Us)</h3>
+          <input name="local_endpoint" placeholder="Local Endpoint (IP or FQDN)" required>
+          <input name="local_port" placeholder="Port / Service" value="ALL">
+        </div>
+
+        <div class="card" id="vendor-specific-card">
+          <h3>Palo Alto / Cisco - Tunnel IPs</h3>
+          <input name="tunnel_local_ip" placeholder="Tunnel Local IP (CIDR)">
+          <input name="tunnel_remote_ip" placeholder="Tunnel Remote IP">
+          <div class="muted">Required for Palo Alto and Cisco templates.</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="secondary" onclick="prevStep()">Back</button>
+          <button type="button" class="primary" onclick="submitPreview()">Generate Preview</button>
+          <button type="button" class="primary" onclick="submitDownload(true)">Download Raw (include PSK)</button>
+          <button type="button" class="secondary" onclick="submitDownload(false)">Download Raw (redact PSK)</button>
+          <label><input type="checkbox" name="save_encrypted" form="wizard-form"> Save PSK encrypted on server</label>
+          <button type="button" class="primary" onclick="submitSave()">Save Configuration</button>
+        </div>
+      </section>
+
+      <input type="hidden" name="include_psk" id="include_psk" value="0">
+
+    </form>
+
+    <footer class="footer">
+      <small>For local use only. Handle PSKs and secrets carefully.</small>
+      <div class="footer-meta">Created by Artan V.</div>
+    </footer>
+  </main>
 </div>
 <script src="/static/wizard.js"></script>
+<script>
+function submitSave() {
+  const form = document.getElementById('wizard-form');
+  const fd = new FormData(form);
+  fetch('/save', { method: 'POST', body: fd }).then(r => r.text()).then(t => alert(t));
+}
+</script>
 </body>
 </html>

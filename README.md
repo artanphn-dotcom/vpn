@@ -1,5 +1,7 @@
 # FortiGate IPsec Configuration Generator
 
+Created by Artan V.
+
 A small Flask web application that generates FortiGate and FortiManager IPsec VPN configuration snippets from user-provided VPN parameters. It provides a simple web form and Jinja2 templates to render device-specific configuration blocks that can be copied into device CLI or management consoles.
 
 Features
@@ -88,7 +90,65 @@ Contributing
 Contact
 - For questions or improvements, open an issue in the project repository or update the README with repository/contact details.
 
+Author
+- Created by Artan V.
+
+Improvements and roadmap
+- Validation & security
+  - Strengthen input validation in `models.py` (more precise IP/subnet checks, PSK strength rules).
+  - Never log or persist PSKs; add UI/server option to redact secrets in outputs and logs.
+  - Add support for .env configuration (use python-dotenv) and document secure deployment practices.
+
+- Developer experience
+  - Split the app into a package (move to `app/__init__.py` and use Blueprints) for easier testing and extension.
+  - Add unit tests (see `tests/`) and a GitHub Actions workflow for CI (`.github/workflows/ci.yml`).
+  - Provide a Dockerfile for reproducible runs and a `Makefile` or simple scripts for common tasks.
+
+- UX & features
+  - Add copy-to-clipboard and download-as-file buttons in the UI (templates already include a basic copy button).
+  - Offer presets for common FortiOS versions and allow selecting multiple phase proposals.
+  - Improve frontend validation and responsive styling in `static/`.
+
+- Documentation
+  - Add a `CONTRIBUTING.md`, `LICENSE` and `ISSUE_TEMPLATE.md`.
+  - Expand README with Quick Start examples, Troubleshooting and WSL/Ubuntu instructions.
+
+Quick next steps I implemented for you
+- Added a basic unit test at `tests/test_app.py` to validate homepage and generation flow.
+- Added a GitHub Actions CI workflow at `.github/workflows/ci.yml` to run tests and linting.
+- Added a `Dockerfile` to run the application with Uvicorn in a container.
+
+If you'd like, I can:
+- Add more tests (validation edge cases, template outputs).
+- Convert the app into a package structure and update imports.
+- Create `CONTRIBUTING.md`, `LICENSE` and issue templates.
+
+To run the tests locally (PowerShell):
+1. Create and activate venv:
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+2. Install deps and pytest:
+   pip install -r requirements.txt
+   pip install pytest
+3. Run tests:
+   pytest -q
+
+To build and run the Docker image (PowerShell):
+1. Build image:
+   docker build -t fortigate-ipsec-generator .
+2. Run container:
+   docker run -p 8000:8000 fortigate-ipsec-generator
+
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app:app --reload
 Browser: http://127.0.0.1:8000
+
+Additional recommendations
+- Add unit tests that validate template outputs for each vendor (assert presence of key blocks and correct fields).
+- Add a Docker Compose setup for local dev environments with a small static web UI or test harness.
+- Add frontend validation for IP/subnet formats (use a library or regex) and helpful inline hints for vendor-specific fields.
+- Consider encrypting PSKs if you plan to persist them or adding an option to store configs locally encrypted.
+- Provide example presets for common FortiOS/PAN-OS/Cisco versions to reduce user input and errors.# vpn 
+- Artan V.
+# vpn
